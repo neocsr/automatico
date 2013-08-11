@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>RSpec in the browser</title>
+    <script type="text/javascript" src="/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/jstest.js"></script>
+    <script type="text/javascript" src="/faye/client.js"></script>
+  </head>
+  <body>
+    <button id="start">Start</button>
+
+    <script type="text/javascript">
+      var options = new JS.Test.Runner().getOptions(),
+          R       = JS.Test.Reporters,
+          browser = new R.Browser(options),
+          reader  = new R.JSON.Reader(browser)
+
+      var test = encodeURIComponent(JSON.stringify(options.test)),
+          ws   = new WebSocket('ws://localhost:9292/websocket')
+
+      ws.onopen = function(event) {
+        console.log("-- open --");
+        console.log(event);
+      }
+
+      ws.onmessage = function(event) {
+        console.log("-- message --");
+        console.log(event.data);
+        //reader.read(event.data);
+      }
+
+      ws.onclose = function(event) {
+        console.log("-- close --");
+        console.log(event);
+      }
+
+      var client = new Faye.Client('http://localhost:9292/faye', {
+        timeout: 120,
+        retry: 10,
+        endpoints: {
+          websocket: 'http://localhost:9292/faye'
+        }
+      });
+
+      var subscription = client.subscribe('/results', function(message) {
+        var msg = JSON.stringify(message);
+        reader.read(msg);
+        console.log(msg);
+      });
+
+
+      $(function(){
+        $("#start").on('click', function () {
+          client.publish('/commands', { run: 'test' })
+        })
+      });
+    </script>
+  </body>
+</html>
