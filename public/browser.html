@@ -15,25 +15,6 @@
           browser = new R.Browser(options),
           reader  = new R.JSON.Reader(browser)
 
-      var test = encodeURIComponent(JSON.stringify(options.test)),
-          ws   = new WebSocket('ws://localhost:9292/websocket')
-
-      ws.onopen = function(event) {
-        console.log("-- open --");
-        console.log(event);
-      }
-
-      ws.onmessage = function(event) {
-        console.log("-- message --");
-        console.log(event.data);
-        //reader.read(event.data);
-      }
-
-      ws.onclose = function(event) {
-        console.log("-- close --");
-        console.log(event);
-      }
-
       var client = new Faye.Client('http://localhost:9292/faye', {
         timeout: 120,
         retry: 10,
