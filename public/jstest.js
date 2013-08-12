@@ -5697,6 +5697,7 @@ Test.Reporters.Browser.extend({
     fail: function() {
       if (!this._li) return;
       DOM.removeClass(this._li, 'passed');
+
       DOM.addClass(this._toggle, 'failed');
       if (this._parent.fail) this._parent.fail();
     },
@@ -7341,7 +7342,7 @@ Test.Reporters.extend({
         this._space = this._space + this._space;
         this._pipe = this._pipe + this._pipe;
       }
- 
+
       this.puts('\n\n\n');
       this.cursorHide();
     },

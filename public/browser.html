@@ -15,17 +15,18 @@
           browser = new R.Browser(options),
           reader  = new R.JSON.Reader(browser)
 
-      var client = new Faye.Client('http://localhost:9292/faye', {
+      var client = new Faye.Client('/faye', {
         timeout: 120,
         retry: 10,
         endpoints: {
-          websocket: 'http://localhost:9292/faye'
+          websocket: '/faye'
         }
       });
 
       var subscription = client.subscribe('/results', function(message) {
         var msg = JSON.stringify(message);
         reader.read(msg);
+        console.log("--- results ---");
         console.log(msg);
       });
 
