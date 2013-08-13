@@ -1,20 +1,34 @@
+require 'ruby-debug'
 require "bundler"
 Bundler.require :default
 
-describe Array do
-  before do
-    @strings = %w[foo bar]
-  end
+class Reporter
+  include HTTParty
+  base_uri 'http://localhost:9292'
+end
 
-  it "returns a new array" do
-    @strings.map(&:upcase).should == %w[FOO BAR]
-  end
+class IpAddress
+  include HTTParty
+  base_uri 'http://ip.jsontest.com'
+end
 
-  it "return an array" do
-    "test".split("").should == %w[t e s t]
-  end
+describe IpAddress do
+  it "returns an ip address" do
+    path = "/"
+    response = IpAddress.get path
+    expected = { "ip" => "108.199.226.79" }
 
-  it "used to convert an string to array" do
-    "test".to_a.should == %w[t e s t]
+    body = {
+      :channel => '/details',
+      :data => {
+        :endpoint => "#{IpAddress.base_uri}#{path}",
+        :response => response.parsed_response
+      }
+    }.to_json
+    Reporter.post '/faye',
+      :body => body,
+      :headers => { 'Content-Type' => 'application/json' }
+
+    response.parsed_response.should == expected
   end
 end

@@ -23,10 +23,16 @@
         }
       });
 
-      var subscription = client.subscribe('/results', function(message) {
+      var results = client.subscribe('/results', function(message) {
         var msg = JSON.stringify(message);
         reader.read(msg);
-        console.log("--- results ---");
+        console.log("--- results channel ---");
+        console.log(msg);
+      });
+
+      var details = client.subscribe('/details', function(message) {
+        var msg = JSON.stringify(message);
+        console.log("--- details channel ---");
         console.log(msg);
       });
 
